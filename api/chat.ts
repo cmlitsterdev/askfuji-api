@@ -36,20 +36,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const firstUserContent: Anthropic.MessageParam['content'] = [
+    const firstUserContent = [
       ...camera.fileIds.filter(Boolean).map((fileId) => ({
         type: 'document' as const,
         source: { type: 'file' as const, file_id: fileId },
       })),
       { type: 'text' as const, text: messages[0].text },
-    ];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ] as any[];
 
-    const formattedMessages: Anthropic.MessageParam[] = messages.map(
+    const formattedMessages = messages.map(
       (m: { role: string; text: string }, i: number) => ({
         role: m.role as 'user' | 'assistant',
         content: i === 0 ? firstUserContent : m.text,
       })
-    );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ) as any[];
 
     const response = await client.beta.messages.create({
       model: 'claude-sonnet-4-6',
